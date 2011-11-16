@@ -89,7 +89,6 @@ void armWristUpdate()
     motor[armWrist] = hlLimit(dbc(calcPID(wrist, potInput), 10), 60, -40);
 }
 
-
 void armBaseUpdate()
 {
     int potInput = HTSPBreadADC(S3, 0, 10);
@@ -133,8 +132,6 @@ void armBaseUpdate()
       motor[armBase] = 0;
     }
 }
-
-
 
 void armGrabberUpdate()
 {
