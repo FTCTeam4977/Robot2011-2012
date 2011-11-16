@@ -19,7 +19,7 @@
 task main()
 {
   waitForStart();
-  while(1)
+  while(true)
   {
     getJoystickSettings(joystick);
     nxtDisplayString(0, "%i", ((nMotorEncoder[leftDrive]-nMotorEncoder[rightDrive])/2));
