@@ -9,7 +9,6 @@
 #pragma config(Motor,  mtr_S1_C2_2,     ballCollector, tmotorNormal, openLoop)
 #pragma config(Motor,  mtr_S1_C3_1,     leftDrive,     tmotorNormal, openLoop)
 #pragma config(Motor,  mtr_S1_C3_2,     armBase,       tmotorNormal, openLoop)
-
 #define GYRO S2
 #include "autonoLib.c"
 #include "JoystickDriver.c"
@@ -18,13 +17,7 @@ task main()
 {
   initGyro();
   waitForStart();
-
-  driveTo(10500);
-  turnDegrees(90);
-  resetEncoders();
-  driveTo(-8000, 90);
-  turnDegrees(70);
-  resetEncoders();
-  driveTo(-19000, 78);
+  turnDegrees(10);
+  driveTo(25000, 0);
   while(1);
 }

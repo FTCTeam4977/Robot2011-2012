@@ -31,7 +31,7 @@ PID wrist; // Wrist joint
 PID base; //  Base joint
 PID crateSpinner; // NXT motor powered spinners on arm
 
-int grabberTarget = CLAW_CLOSED;
+int grabberTarget = CLAW_OPEN;
 
 void armWristUpdate()
 {
@@ -135,12 +135,28 @@ void armBaseUpdate()
 
 void armGrabberUpdate()
 {
+  motor[armClaw] = 0;
+  return;
   if ( grabberTarget == CLAW_CLOSED && nMotorEncoder[armClaw] > 365 )
     motor[armClaw] = -50; // Slow because the tubing will pull it shut, if we go 100% it will slam
   else if ( grabberTarget == CLAW_OPEN && nMotorEncoder[armClaw] < 356 )
     motor[armClaw] = 100;
   else
     motor[armClaw] = 0;
+}
+
+#define armInRange(a,b) if ( isBetween(HTSPBreadADC(S3, 0, 10), a, b) )
+#define moveSpinners(p) crateSpinner.target = p
+
+void updateArmPosition()
+{
+ armInRange(1,2) moveSpinners(10);
+ else armInRange(5,7) moveSpinners(300);
+ else armInRange(5,7) moveSpinners(300);
+ else armInRange(5,7) moveSpinners(300);
+ else armInRange(5,7) moveSpinners(300);
+ else armInRange(5,7) moveSpinners(300);
+
 }
 
 task main()

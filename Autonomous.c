@@ -16,30 +16,48 @@
 
 #include "JoystickDriver.c"
 
-int selectAuton()
+bool leftPressed()
 {
-  int m_autonID=0;
-  int cyclesUnpressed = 0;
-  while(1)
-  {
-    nxtDisplayString(0, "Auton: %i", m_autonID);
-    if ( nNxtButtonPressed == kRightButton && cyclesUnpressed > 2000 )
+	static int cyclesUnpressed = 0;
+	
+	if ( nNxtButtonPressed == kLeftButton && cyclesUnpressed > 2000 )
     {
-      m_autonID++;
-      cyclesUnpressed = 0;
+    	cyclesUnpressed = 0;
+		return true;
     }
-    else if ( nNxtButtonPressed == kLeftButton && cyclesUnpressed > 2000 )
-    {
-      m_autonID--;
-      cyclesUnpressed = 0;
-    }
-    else if ( nNxtButtonPressed == kEnterButton )
-      return m_autonID;
-    else if ( cyclesUnpressed < 3000 ) cyclesUnpressed++;
+	else if ( cyclesUnpressed < 4000 ) cyclesUnpressed++;
+	
+	return false;
+}
 
-    if ( m_autonID < 1 ) m_autonID = 1;
-  }
-  return 0;
+bool rightPressed()
+{
+	static int cyclesUnpressed = 0;
+	
+	if ( nNxtButtonPressed == kRightButton && cyclesUnpressed > 2000 )
+    {
+    	cyclesUnpressed = 0;
+		return true;
+    }
+	else if ( cyclesUnpressed < 4000 ) cyclesUnpressed++;
+	
+	return false;
+}
+
+int getValueFromUser(string s = "Value", int max = 10, int min = 0)
+{
+	int m_val = min;
+	while(1)
+	{
+		nxtDisplayString(0, "%s: %i", s, m_val);
+		if ( rightPressed() )
+			m_val++;
+		else if ( leftPressed() )
+			m_val--;
+		
+		if ( nNxtButtonPressed == kEnterButton )
+			return m_val;
+	}
 }
 
 int getDelay()

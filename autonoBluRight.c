@@ -17,12 +17,13 @@ task main()
 {
   initGyro();
   waitForStart();
-  driveTo(10500); // come off the ramp
+  turnDegrees(30);
+  driveTo(9000, 0); // come off the ramp
   turnDegrees(-90); // turn so we are pointed to the ball
   resetEncoders();
-  driveTo(-8000, -90); // drive towards ball
-  turnDegrees(-65); // angle toward ball so we can push it and end up inside the park zone
+  driveTo(-9000, -90); // drive towards ball
+  turnDegrees(-50); // angle toward ball so we can push it and end up inside the park zone
   resetEncoders();
-  driveTo(-19000, -65); // drive into zone
+  driveTo(-19000, -43); // drive into zone
   while(1);
 }
