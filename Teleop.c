@@ -16,6 +16,9 @@
 
 #define BASE_STRAIGHTUP 322
 #define BASE_PICKUP 800
+#define BASE_TWOSTACK 670
+#define BASE_THREESTACK 600
+#define BASE_FOURSTACK 500
 
 #define CLAW_CLOSED 1
 #define CLAW_OPEN 2
@@ -133,29 +136,39 @@ void armBaseUpdate()
     }
 }
 
-void armGrabberUpdate()
-{
-  motor[armClaw] = 0;
-  return;
-  if ( grabberTarget == CLAW_CLOSED && nMotorEncoder[armClaw] > 365 )
-    motor[armClaw] = -50; // Slow because the tubing will pull it shut, if we go 100% it will slam
-  else if ( grabberTarget == CLAW_OPEN && nMotorEncoder[armClaw] < 356 )
-    motor[armClaw] = 100;
-  else
-    motor[armClaw] = 0;
-}
 
 #define armInRange(a,b) if ( isBetween(HTSPBreadADC(S3, 0, 10), a, b) )
 #define moveSpinners(p) crateSpinner.target = p
 
 void updateArmPosition()
 {
- armInRange(1,2) moveSpinners(10);
- else armInRange(5,7) moveSpinners(300);
- else armInRange(5,7) moveSpinners(300);
- else armInRange(5,7) moveSpinners(300);
- else armInRange(5,7) moveSpinners(300);
- else armInRange(5,7) moveSpinners(300);
+ armInRange(732, 900) moveSpinners(0);
+ else armInRange(559,733) moveSpinners(30);
+ else armInRange(558, 400) moveSpinners(50);
+ else armInRange(400, 300) moveSpinners(100);
+
+ int output = calcPID(crateSpinner, nMotorEncoder[motorA]);
+ motor[motorA] = output;
+ motor[motorB] = output;
+}
+
+int clawState = CLAW_CLOSED;
+
+void updateArmGrabber()
+{
+  static int lastClawState = clawState;
+
+  static int runUntil = nPgmTime;
+  static int runSpeed = 0;
+
+  if ( lastArmState != clawState )
+  {
+    lastArmState = clawState;
+  }
+
+  if ( runUntil > nPgmTime )
+    motor[armClaw] = runSpeed;
+  else motor[armClaw] = 0;
 
 }
 
@@ -169,16 +182,13 @@ task main()
   wrist.acceptedRange = 1; // We impliment special checking on the wrist, prevents I reset
   wrist.target = HTSPBreadADC(S3, 1, 10);
 
-  initPID(crateSpinner, 0.3, 0.002, 0.5);
+  initPID(crateSpinner, 3, 0.0001);
   crateSpinner.target = 0;
-
   waitForStart();
 
   while(1)
   {
     getJoystickSettings(joystick);
-    armWristUpdate();
-    armBaseUpdate();
 
     /*
      * JS 1 - drivetrain
@@ -189,14 +199,19 @@ task main()
     /*
      * JS 2 - arm
      */
-    if ( joy1Btn(2) )
-      base.target = BASE_STRAIGHTUP;
-    else if ( joy1Btn(3) )
+
+    if ( joy1Btn(1) )
       base.target = BASE_PICKUP;
+    else if ( joy1Btn(2) )
+      base.target = BASE_TWOSTACK;
+    else if ( joy1Btn(3) )
+      base.target = BASE_THREESTACK;
+    else if ( joy1Btn(4) )
+      base.target = BASE_FOURSTACK;
 
     // Update outputs
     armWristUpdate();
     armBaseUpdate();
-
+    updateArmPosition();
   }
 }

@@ -16,32 +16,58 @@
 
 #include "JoystickDriver.c"
 
+string Alliances[2] = { "Red", "Blue" };
+string RampLocations[2] = { "Left", "Right" };
+
+
 bool leftPressed()
 {
 	static int cyclesUnpressed = 0;
-	
+
 	if ( nNxtButtonPressed == kLeftButton && cyclesUnpressed > 2000 )
-    {
+  {
     	cyclesUnpressed = 0;
-		return true;
-    }
+		  return true;
+  }
 	else if ( cyclesUnpressed < 4000 ) cyclesUnpressed++;
-	
+
 	return false;
 }
 
 bool rightPressed()
 {
 	static int cyclesUnpressed = 0;
-	
+
 	if ( nNxtButtonPressed == kRightButton && cyclesUnpressed > 2000 )
     {
     	cyclesUnpressed = 0;
 		return true;
     }
 	else if ( cyclesUnpressed < 4000 ) cyclesUnpressed++;
-	
+
 	return false;
+}
+
+int getAllianceFromUser()
+{
+  int side = 0;
+  if ( leftPressed() )
+    side = 1;
+  else if ( rightPressed() )
+    side = 0;
+  nxtDisplayString(0, "Alliance: %s", Alliances[side]);
+  return side;
+}
+
+int getSideOfRampFromUser()
+{
+  int ramp = 0;
+  if ( leftPressed() )
+    ramp = 1;
+  else if ( rightPressed() )
+    ramp = 0;
+  nxtDisplayString(0, "Ramp Location: %s", Alliances[side]);
+  return ramp;
 }
 
 int getValueFromUser(string s = "Value", int max = 10, int min = 0)
@@ -54,64 +80,26 @@ int getValueFromUser(string s = "Value", int max = 10, int min = 0)
 			m_val++;
 		else if ( leftPressed() )
 			m_val--;
-		
+
+    if ( m_val => max ) m_val = max;
+    else if ( m_val <= min ) m_val = min;
+
 		if ( nNxtButtonPressed == kEnterButton )
 			return m_val;
 	}
 }
 
-int getDelay()
-{
-  int m_delay=0;
-  int cyclesUnpressed = 0;
-  while(1)
-  {
-    nxtDisplayString(0, "Delay: %i", m_delay);
-    if ( nNxtButtonPressed == kRightButton && cyclesUnpressed > 2000 )
-    {
-      m_delay++;
-      cyclesUnpressed = 0;
-    }
-    else if ( nNxtButtonPressed == kLeftButton && cyclesUnpressed > 2000 )
-    {
-      m_delay--;
-      cyclesUnpressed = 0;
-    }
-    else if ( nNxtButtonPressed == kEnterButton )
-      return m_delay;
-    else if ( cyclesUnpressed < 3000 ) cyclesUnpressed++;
-
-    if ( m_delay < 0 ) m_delay = 0;
-  }
-  return 0;
-}
-
 
 task main()
 {
-  int delay  = getDelay();
+  int alliance  = getAllianceFromUser();
   wait1Msec(800);
-  int autoID = selectAuton();
+  int rampSide = getSideOfRampFromUser();
+  wait1Msec(800);
+  int delay = getValueFromUser("Delay");
 
   wait1Msec(delay*1000);
 
-  switch ( autoID )
-  {
-  case 1:
-    nxtDisplayString(0, "Straight");
-    break;
-  case 2:
-    nxtDisplayString(0, "RedFarPark");
-    break;
-  case 3:
-    nxtDisplayString(0, "BluFarPark");
-    break;
-  default:
-    nxtDisplayString(0, "Invalid ID");
-    wait1Msec(2000);
-    return;
-    break;
-  }
 
   initGyro();
   waitForStart();
