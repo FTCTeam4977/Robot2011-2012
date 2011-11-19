@@ -14,4 +14,6 @@
 
 #define flipVar(v, max) (-(v-max))
 
+#define signSquare(x) ((x<0)? -1*x*x : x*x)
+
 #endif

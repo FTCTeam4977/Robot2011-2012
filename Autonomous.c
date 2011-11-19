@@ -100,7 +100,6 @@ task main()
 
   wait1Msec(delay*1000);
 
-
   initGyro();
   waitForStart();
   wait1Msec(delay*1000);

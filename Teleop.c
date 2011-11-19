@@ -58,13 +58,14 @@ void armWristUpdate()
   if ( wrist.target < potInput ) // Going down
   {
     wrist.Kp = 0.5;
-    if ( abs(wrist.error ) < 4 )
+    if ( abs(wrist.error ) < 10 )
       wrist.Kd = 0;
     else
-      wrist.Kd = 4;
+      wrist.Kd = 3.3;
   }
   else if ( wrist.target > potInput ) // Going up
   {
+
     wrist.Kp = 5;
     wrist.Kd = 1;
   }
@@ -89,7 +90,7 @@ void armWristUpdate()
     motor[armWrist] = 0;
   }
   else
-    motor[armWrist] = hlLimit(dbc(calcPID(wrist, potInput), 10), 60, -40);
+    motor[armWrist] = hlLimit(dbc(calcPID(wrist, potInput), 10), 80, (wrist.target < potInput&&abs(wrist.error) < 20 ? -20:-40));
 }
 
 void armBaseUpdate()
@@ -138,25 +139,38 @@ void armBaseUpdate()
 
 
 #define armInRange(a,b) if ( isBetween(HTSPBreadADC(S3, 0, 10), a, b) )
+#define wristInRange(a,b) if ( isBetween(HTSPBreadADC(S3, 1, 10), a, b) )
 #define moveSpinners(p) crateSpinner.target = p
+
 
 void updateArmPosition()
 {
- armInRange(732, 900) moveSpinners(0);
- else armInRange(559,733) moveSpinners(30);
- else armInRange(558, 400) moveSpinners(50);
- else armInRange(400, 300) moveSpinners(150);
+  if ( abs(wrist.error) < 50 && wrist.target == WRIST_EXTENDED ) // Normal ( picking up crates, etc )
+  {
+    armInRange(732, 900) moveSpinners(0);
+    else armInRange(559,733) moveSpinners(30);
+    else armInRange(558, 400) moveSpinners(50);
+    else armInRange(400, 300) moveSpinners(130);
+  }
+  else if ( abs(wrist.error) > 50 && wrist.target == WRIST_EXTENDED ) // Wrist is moving to top, needs to stay level
+  {
+    wristInRange(1023, 935) moveSpinners(204);
+    else wristInRange(934, 864) moveSpinners(244);
+    else wristInRange(863, 774) moveSpinners(316);
+  }
+  else if ( wrist.target == WRIST_INSIDEBODY ) // Wrist is moving back, crate is empty so don't bother keeping level
+    moveSpinners(30);
 
- int output = calcPID(crateSpinner, nMotorEncoder[motorA]);
- motor[motorA] = output;
- motor[motorB] = output;
+  nxtDisplayString(0, "%i", nMotorEncoder[motorA]);
+  nxtDisplayString(1, "%i", HTSPBreadADC(S3, 1, 10));
+  int output = calcPID(crateSpinner, nMotorEncoder[motorA]);
+   motor[motorA] = output;
+  motor[motorB] = output;
 }
 
 void armGrabberUpdate()
 {
-  static unsigned long timeRef = nPgmTime;
- // static unsigned long pulseRef = nPgmTime;
-
+  static long timeRef = nPgmTime;
   static int lastTarget = grabberTarget;
 
   if ( lastTarget != grabberTarget )
@@ -168,19 +182,11 @@ void armGrabberUpdate()
     motor[armClaw] = -50;
   else
     motor[armClaw] = 0;
-  /*
-  if ( grabberTarget == CLAW_CLOSED && timeRef < nPgmTime && (pulseRef+500) < nPgmTime  )
-  {
-    motor[armClaw] = -50;
-  }
-  else if ( grabberTarget == CLAW_CLOSED && timeRef < nPgmTime && (pulseRef+1000) < nPgmTime )
-  {
-    motor[armClaw] = 0;
-    pulseRef = nPgmTime;
-  }*/
 
   lastTarget = grabberTarget;
 }
+
+
 
 task main()
 {
@@ -190,46 +196,67 @@ task main()
 
   initPID(wrist, 3.5, 0.05, 8);
   wrist.acceptedRange = 1; // We impliment special checking on the wrist, prevents I reset
-  wrist.target = HTSPBreadADC(S3, 1, 10);
 
   initPID(crateSpinner, 3, 0.0001);
   crateSpinner.target = 0;
-  waitForStart();
+  base.target =  BASE_STRAIGHTUP;
+  wrist.target = WRIST_EXTENDED;
 
+  waitForStart();
   grabberTarget = CLAW_CLOSED;
 
   while(1)
   {
     getJoystickSettings(joystick);
-
     /*
      * JS 1 - drivetrain
      */
-    motor[leftDrive] = dbc(joystick.joy1_y1,5);
-    motor[rightDrive] = dbc(joystick.joy1_y2,5);
+    motor[leftDrive] = dbc(joystick.joy1_y1,15);
+    motor[rightDrive] = dbc(joystick.joy1_y2,15);
 
     /*
      * JS 2 - arm
      */
 
-    // Arm positioning
-    if ( joy2Btn(1) )
-      base.target = BASE_PICKUP;
-    else if ( joy2Btn(2) )
-      base.target = BASE_TWOSTACK;
-    else if ( joy2Btn(3) )
-      base.target = BASE_THREESTACK;
-    else if ( joy2Btn(4) )
-      base.target = BASE_FOURSTACK;
-    else if ( joy2Btn(10) )
-      base.target = BASE_STRAIGHTUP;
+     if ( joy1Btn(1) )
+     {
+       motor[armBase] = 0;
+       motor[armClaw] = 0;
+       motor[motorA] = 0;
+       motor[motorB] = 0;
+       while(1)
+       {
+           nxtDisplayString(0, "%i", nMotorEncoder[motorA]);
+           nxtDisplayString(1, "%i", HTSPBreadADC(S3, 1, 10));
+       }
+     }
 
+    // Arm positioning
+    if ( joy2Btn(1) && wrist.target != WRIST_INSIDEBODY )
+      base.target = BASE_PICKUP;
+    else if ( joy2Btn(2) && wrist.target != WRIST_INSIDEBODY )
+      base.target = BASE_TWOSTACK;
+    else if ( joy2Btn(3) && wrist.target != WRIST_INSIDEBODY )
+      base.target = BASE_THREESTACK;
+    else if ( joy2Btn(4) && wrist.target != WRIST_INSIDEBODY )
+      base.target = BASE_FOURSTACK;
+    else if ( joy2Btn(10) ) // crate up / store up
+    {
+      base.target = BASE_STRAIGHTUP;
+      wrist.target = WRIST_EXTENDED;
+    }
+    else if ( joy2Btn(9) && base.target == BASE_STRAIGHTUP ) // crate inside
+    {
+      wrist.target = WRIST_INSIDEBODY;
+      base.target = 280;
+    }
 
     // Claw grab toggle
     if ( joy2Btn(5) )
       grabberTarget = CLAW_CLOSED;
     else if ( joy2Btn(6) )
       grabberTarget = CLAW_OPEN;
+
 
     // Update outputs
     armWristUpdate();
