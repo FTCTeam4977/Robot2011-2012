@@ -265,6 +265,8 @@ task main()
     else
       updateCratePosition();
 
+    motor[ballCollector] = (joy2Btn()? -100:0);
+
     // Update outputs
     armWristUpdate();
     armBaseUpdate();
