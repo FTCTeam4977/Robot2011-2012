@@ -143,7 +143,7 @@ void armBaseUpdate()
 #define moveSpinners(p) crateSpinner.target = p
 
 
-void updateArmPosition()
+void updateCratePosition()
 {
   if ( abs(wrist.error) < 50 && wrist.target == WRIST_EXTENDED ) // Normal ( picking up crates, etc )
   {
@@ -168,7 +168,7 @@ void updateArmPosition()
   motor[motorB] = output;
 }
 
-void updateCratePosition()
+void armGrabberUpdate()
 {
   static long timeRef = nPgmTime;
   static int lastTarget = grabberTarget;
@@ -265,7 +265,7 @@ task main()
     else
       updateCratePosition();
 
-    motor[ballCollector] = (joy2Btn()? -100:0);
+    motor[ballCollector] = (joy2Btn(10)? -100:0);
 
     // Update outputs
     armWristUpdate();
