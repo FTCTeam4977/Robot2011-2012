@@ -220,19 +220,6 @@ task main()
      * JS 2 - arm
      */
 
-     if ( joy1Btn(1) )
-     {
-       motor[armBase] = 0;
-       motor[armClaw] = 0;
-       motor[motorA] = 0;
-       motor[motorB] = 0;
-       while(1)
-       {
-           nxtDisplayString(0, "%i", nMotorEncoder[motorA]);
-           nxtDisplayString(1, "%i", HTSPBreadADC(S3, 1, 10));
-       }
-     }
-
     // Arm positioning
     if ( joy2Btn(1) && wrist.target != WRIST_INSIDEBODY )
       base.target = BASE_PICKUP;
