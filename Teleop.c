@@ -152,24 +152,34 @@ void updateArmPosition()
  motor[motorB] = output;
 }
 
-int clawState = CLAW_CLOSED;
-
-void updateArmGrabber()
+void armGrabberUpdate()
 {
-  static int lastClawState = clawState;
+  static unsigned long timeRef = nPgmTime;
+ // static unsigned long pulseRef = nPgmTime;
 
-  static int runUntil = nPgmTime;
-  static int runSpeed = 0;
+  static int lastTarget = grabberTarget;
 
-  if ( lastArmState != clawState )
+  if ( lastTarget != grabberTarget )
+    timeRef = nPgmTime+500;
+
+  if ( grabberTarget == CLAW_OPEN && timeRef > nPgmTime )
+    motor[armClaw] = 80;
+  else if ( grabberTarget == CLAW_CLOSED && timeRef > nPgmTime  )
+    motor[armClaw] = -50;
+  else
+    motor[armClaw] = 0;
+  /*
+  if ( grabberTarget == CLAW_CLOSED && timeRef < nPgmTime && (pulseRef+500) < nPgmTime  )
   {
-    lastArmState = clawState;
+    motor[armClaw] = -50;
   }
+  else if ( grabberTarget == CLAW_CLOSED && timeRef < nPgmTime && (pulseRef+1000) < nPgmTime )
+  {
+    motor[armClaw] = 0;
+    pulseRef = nPgmTime;
+  }*/
 
-  if ( runUntil > nPgmTime )
-    motor[armClaw] = runSpeed;
-  else motor[armClaw] = 0;
-
+  lastTarget = grabberTarget;
 }
 
 task main()
@@ -186,6 +196,8 @@ task main()
   crateSpinner.target = 0;
   waitForStart();
 
+  grabberTarget = CLAW_CLOSED;
+
   while(1)
   {
     getJoystickSettings(joystick);
@@ -200,6 +212,7 @@ task main()
      * JS 2 - arm
      */
 
+    // Arm positioning
     if ( joy1Btn(1) )
       base.target = BASE_PICKUP;
     else if ( joy1Btn(2) )
@@ -208,10 +221,20 @@ task main()
       base.target = BASE_THREESTACK;
     else if ( joy1Btn(4) )
       base.target = BASE_FOURSTACK;
+    else if ( joy1Btn(10) )
+      base.target = BASE_STRAIGHTUP;
 
+    // Claw grab toggle
+    if ( joy1Btn(6) )
+      grabberTarget = CLAW_CLOSED;
+    else if ( joy1Btn(8) )
+      grabberTarget = CLAW_OPEN;
+
+    nxtDisplayString(0, "%i", nMotorEncoder[armClaw]);
     // Update outputs
     armWristUpdate();
     armBaseUpdate();
     updateArmPosition();
+    armGrabberUpdate();
   }
 }
