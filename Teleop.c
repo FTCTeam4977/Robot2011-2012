@@ -168,7 +168,7 @@ void updateArmPosition()
   motor[motorB] = output;
 }
 
-void armGrabberUpdate()
+void updateCratePosition()
 {
   static long timeRef = nPgmTime;
   static int lastTarget = grabberTarget;
@@ -257,11 +257,17 @@ task main()
     else if ( joy2Btn(6) )
       grabberTarget = CLAW_OPEN;
 
+    if ( dbc(joystick.joy2_y2, 10) > 0 )
+    {
+      motor[motorA] = joystick.joy1_y1;
+      motor[motorB] = joystick.joy1_y1;
+    }
+    else
+      updateCratePosition();
 
     // Update outputs
     armWristUpdate();
     armBaseUpdate();
-    updateArmPosition();
     armGrabberUpdate();
   }
 }
