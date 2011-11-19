@@ -145,7 +145,7 @@ void updateArmPosition()
  armInRange(732, 900) moveSpinners(0);
  else armInRange(559,733) moveSpinners(30);
  else armInRange(558, 400) moveSpinners(50);
- else armInRange(400, 300) moveSpinners(100);
+ else armInRange(400, 300) moveSpinners(150);
 
  int output = calcPID(crateSpinner, nMotorEncoder[motorA]);
  motor[motorA] = output;
@@ -213,24 +213,24 @@ task main()
      */
 
     // Arm positioning
-    if ( joy1Btn(1) )
+    if ( joy2Btn(1) )
       base.target = BASE_PICKUP;
-    else if ( joy1Btn(2) )
+    else if ( joy2Btn(2) )
       base.target = BASE_TWOSTACK;
-    else if ( joy1Btn(3) )
+    else if ( joy2Btn(3) )
       base.target = BASE_THREESTACK;
-    else if ( joy1Btn(4) )
+    else if ( joy2Btn(4) )
       base.target = BASE_FOURSTACK;
-    else if ( joy1Btn(10) )
+    else if ( joy2Btn(10) )
       base.target = BASE_STRAIGHTUP;
 
+
     // Claw grab toggle
-    if ( joy1Btn(6) )
+    if ( joy2Btn(5) )
       grabberTarget = CLAW_CLOSED;
-    else if ( joy1Btn(8) )
+    else if ( joy2Btn(6) )
       grabberTarget = CLAW_OPEN;
 
-    nxtDisplayString(0, "%i", nMotorEncoder[armClaw]);
     // Update outputs
     armWristUpdate();
     armBaseUpdate();
