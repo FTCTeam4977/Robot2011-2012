@@ -181,7 +181,10 @@ void armGrabberUpdate()
   if ( grabberTarget == CLAW_OPEN && timeRef > nPgmTime )
     motor[armClaw] = 80;
   else if ( grabberTarget == CLAW_CLOSED && timeRef > nPgmTime  )
+  {
+    crateManualControlOffset = 0;
     motor[armClaw] = -50;
+  }
   else
     motor[armClaw] = 0;
 
