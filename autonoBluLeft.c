@@ -17,6 +17,7 @@ task main()
 {
   initGyro();
   waitForStart();
+  wait1Msec(2000);
   driveTo(10500); // come off the ramp
   turnDegrees(-90); // turn so we are pointed to the ball
   resetEncoders();

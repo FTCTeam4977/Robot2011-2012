@@ -18,7 +18,7 @@ task main()
 {
   initGyro();
   waitForStart();
-
+  wait1Msec(1000);
   driveTo(9000);
   turnDegrees(90);
   resetEncoders();

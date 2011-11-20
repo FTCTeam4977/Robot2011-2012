@@ -139,7 +139,7 @@ void armBaseUpdate()
 
 int crateRawTarget = 0;
 int crateManualControlOffset = 0;
-
+/*
 #define armInRange(a,b) if ( isBetween(HTSPBreadADC(S3, 0, 10), a, b) )
 #define wristInRange(a,b) if ( isBetween(HTSPBreadADC(S3, 1, 10), a, b) )
 #define updateSpinnerTarget() crateSpinner.target = (crateRawTarget+crateManualControlOffset)
@@ -191,7 +191,7 @@ void armGrabberUpdate()
   lastTarget = grabberTarget;
 }
 
-
+*/
 
 task main()
 {
@@ -249,20 +249,20 @@ task main()
     else if ( joy2Btn(6) )
       grabberTarget = CLAW_OPEN;
 
-    if ( dbc(joystick.joy2_y2, 15) > 0 )
+   /* if ( dbc(joystick.joy2_y2, 15) > 0 )
     {
       motor[motorA] = joystick.joy1_y1/2;
       motor[motorB] = joystick.joy1_y1/2;
       crateManualControlOffset = nMotorEncoder[motorA]-crateRawTarget;
     }
     else
-      updateCratePosition();
+      updateCratePosition();*/
 
     motor[ballCollector] = (joy2Btn(10)? -100:0);
 
     // Update outputs
-    armWristUpdate();
-    armBaseUpdate();
-    armGrabberUpdate();
+    //armWristUpdate();
+    //armBaseUpdate();
+    //armGrabberUpdate();
   }
 }

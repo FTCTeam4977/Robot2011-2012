@@ -18,7 +18,7 @@ task main()
 {
   initGyro();
   waitForStart();
-  
+  wait1Msec(2000);
   turnDegrees(-30);
   driveTo(9000, 0);
   turnDegrees(90);
