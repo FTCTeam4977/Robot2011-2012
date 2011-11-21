@@ -159,7 +159,7 @@ void Menu()     // function that handles the menu
             break;
         case 4:
             eraseDisplay();
-            nxtDisplayString(1,"Wait for %i secs",Delay);
+            nxtDisplayString(1,"Wait for %i seconds",Delay);
             switch (MenuItem)
         {
             case 0:
@@ -231,7 +231,6 @@ void Menu()     // function that handles the menu
         case 6:
             eraseDisplay();
             nxtDisplayString(1,"waiting for start");
-            nxtDisplayString(5,"Delay: %i",Delay);
             switch (Color)
             {
                 case 'b':
