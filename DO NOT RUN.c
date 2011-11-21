@@ -1,4 +1,4 @@
-zint MenuItem = 1;
+int MenuItem = 1;
 int MenuNum = 1;
 int Enter = 0;
 
@@ -21,7 +21,7 @@ void convert()
     if(Auto == 'b')
         AutoDisplay = "bowlingbowl";
     if(Auto == 'd')
-        AutoDisplay = "Drive";
+        AutoDisplay = "Drive straight";
     if(Auto == 'c')
         AutoDisplay = "Go crazy";
 }
@@ -163,10 +163,9 @@ void Menu()
             }
             break;
         case 4:
-            nxtDisplayString(2,"Is this correct?")
-            nxtDisplayString(3,"Color :%s",ColorDisplay);
-            nxtDisplayString(4,"side: %s",SideDisplay);
-            nxtDisplayString(5,"Auto:%s",AutoDisplay);
+            nxtDisplayString(3,"Color :%c",ColorDisplay);
+            nxtDisplayString(4,"side: %c",SideDisplay);
+            nxtDisplayString(5,"Auto:%c",AutoDisplay);
             switch (MenuItem)
         {
             case 0:
@@ -174,13 +173,13 @@ void Menu()
                 break;
 
             case 1:
-                nxtDisplayString(6,"<Yes>");
-                nxtDisplayString(7,"No");
+                nxtDisplayString(1,"<Yes>");
+                nxtDisplayString(2,"No");
                 break;
 
             case 2:
-                nxtDisplayString(6,"Yes");
-                nxtDisplayString(7,"<No>");
+                nxtDisplayString(1,"Yes");
+                nxtDisplayString(2,"<No>");
                 break;
 
             case 3:
@@ -330,7 +329,7 @@ task main()
       }
 		nxtDisplayString(0,"C:%c S:%c A:%c",Color,Side,Auto);
       Menu();
-      convert();
+
 	  while (true)
 	  {
 	  	nBtn = nNxtButtonPressed;
