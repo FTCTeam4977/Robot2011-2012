@@ -1,13 +1,16 @@
 int MenuItem = 1;   //int for to change the menu item with the buttons.
 int MenuNum = 1;    //int to manage what menu your in.
-int Enter;          //int to find out when the "Enter" button.
-char Color;         //char to store color choice
-string ColorDisplay;//string to display color
-char Side;          //char to store side choice
-string SideDisplay; //string to display side
-char Auto;          //char to store auto choice
-string AutoDisplay; //string to display auto
-int Delay = 1;
+int Enter;          //int to find out when the "Enter" button was press.
+int Exit;           //int to find out when the "Exit" button was press.
+char Color;         //char to store color choice.
+string ColorDisplay;//string to display color.
+char Side;          //char to store side choice.
+string SideDisplay; //string to display side.
+char Auto;          //char to store auto choice.
+string AutoDisplay; //string to display auto.
+int Delay = 1;      //int to store Delay time.
+int ExitProgram = 1;//int to find out how many
+
 void convert()  // function that converts the chars to string
 {
     if(Color == 'b')
@@ -25,6 +28,16 @@ void convert()  // function that converts the chars to string
     if(Auto == 'c')
         AutoDisplay = "Go crazy";
 }
+
+void GoBack()
+{
+    if (Exit)
+    {
+        Exit = false;
+        --MenuNum;
+    }
+}
+
 void Menu()     // function that handles the menu
 {
     switch (MenuNum) // switches wich menu to be in
@@ -169,6 +182,7 @@ void Menu()     // function that handles the menu
                 break;
             case 2:
                 MenuItem = 1;
+                if (Delay < 30)
                 ++Delay;
                 break;
         }
@@ -213,6 +227,8 @@ void Menu()     // function that handles the menu
                         MenuNum = 6;
                         MenuItem = 1;
                         eraseDisplay();
+                        ExitProgram = 1;
+
                         break;
 
                     case 2:
@@ -223,6 +239,7 @@ void Menu()     // function that handles the menu
                         MenuNum = 1;
                         MenuItem = 1;
                         eraseDisplay();
+                        ExitProgram = 1;
                         break;
 
                 }
@@ -342,19 +359,29 @@ void Menu()     // function that handles the menu
                             nxtDisplayString(3,"side 2");
                             nxtDisplayString(4,"go crazy");
                             return;
+
                     }
 
                 }
 
 
             }
-
+             default:
+                MenuNum = 1;
+                break;
 }
 }
 task main()
 {
   nNxtButtonTask = -2;//takes full control of buttons and allows us to us exit button
   nNxtExitClicks = 3;// because we take control, we need a way the exit the program,with this we exit by hitiing exit three times
+  nxtDisplayString(1,"AutonomousSelect");
+  nxtDisplayString(2,"left up");
+  nxtDisplayString(3,"right down");
+  nxtDisplayString(4,"enter to choose");
+  nxtDisplayString(5,"brown to go back");
+  wait1Msec(5000);
+  eraseDisplay();
   while(true)
   {
     int nBtn;
@@ -369,12 +396,14 @@ task main()
 	  }
 	  switch (nBtn)
 	  {
-            case kLeftButton:  --MenuItem;                    break;
-			case kRightButton: ++MenuItem;    	 	          break;
-			case kEnterButton:  Enter = true;                 break;
+      case kLeftButton:  --MenuItem;                    break;
+			case kRightButton: ++MenuItem;    	 	            break;
+			case kEnterButton: Enter = true;   ++ExitProgram; break;
+      case kExitButton:  Exit = true;    --ExitProgram; break;
       }
 		nxtDisplayString(0,"C:%c S:%c A:%c",Color,Side,Auto);
       Menu();
+      GoBack();
       convert();
 	  while (true)
 	  {
