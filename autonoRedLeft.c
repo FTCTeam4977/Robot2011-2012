@@ -14,18 +14,17 @@
 #include "autonoLib.c"
 #include "JoystickDriver.c"
 
-void RedRight
+task main()
 {
   initGyro();
   waitForStart();
-  wait1Msec(2000);
-  turnDegrees(-30);
-  driveTo(9000, 0);
+  wait1Msec(1000);
+  driveTo(9000);
   turnDegrees(90);
   resetEncoders();
-  driveTo(-9000, 90);
+  driveTo(-7100, 90);
   turnDegrees(70);
   resetEncoders();
-  driveTo(-18000, 67);
+  driveTo(-18000, 70);
   while(1);
 }
