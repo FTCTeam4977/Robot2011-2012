@@ -1,3 +1,5 @@
+#include "JoystickDriver.c"
+
 int MenuItem = 1;   //int for to change the menu item with the buttons.
 int MenuNum = 1;    //int to manage what menu your in.
 int Enter;          //int to find out when the "Enter" button.
@@ -240,6 +242,7 @@ void Menu()     // function that handles the menu
                     switch (Auto)
                     {
                         case 'b':
+                         waitForStart();
                             //code for blue side1 get bowling ball
 
                             nxtDisplayString(2,"blue");
@@ -368,10 +371,10 @@ task main()
 	  }
 	  switch (nBtn)
 	  {
-            case kLeftButton:  --MenuItem;                    break;
-			case kRightButton: ++MenuItem;    	 	          break;
-			case kEnterButton:  Enter = true;                 break;
-      }
+      case kLeftButton: --MenuItem;           break;
+			case kRightButton: ++MenuItem;          break;
+			case kEnterButton: Enter = true;        break;
+    }
 		nxtDisplayString(0,"C:%c S:%c A:%c",Color,Side,Auto);
       Menu();
       convert();
