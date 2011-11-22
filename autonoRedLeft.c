@@ -1,4 +1,4 @@
-#pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTMotor,  none)
+  #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTMotor,  none)
 #pragma config(Sensor, S2,     gyro,                sensorI2CHiTechnicGyro)
 #pragma config(Sensor, S3,     htproto,             sensorI2CCustom9V)
 #pragma config(Motor,  motorA,          rightArmSpin,  tmotorNormal, openLoop, encoder)

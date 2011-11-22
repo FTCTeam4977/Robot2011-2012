@@ -1,3 +1,5 @@
+#include "JoystickDriver.c"
+
 int MenuItem = 1;   //int for to change the menu item with the buttons.
 int MenuNum = 1;    //int to manage what menu your in.
 int Enter;          //int to find out when the "Enter" button was press.
@@ -172,7 +174,7 @@ void Menu()     // function that handles the menu
             break;
         case 4:
             eraseDisplay();
-            nxtDisplayString(1,"Wait for %i secs",Delay);
+            nxtDisplayString(1,"Wait for %i seconds",Delay);
             switch (MenuItem)
         {
             case 0:
@@ -248,7 +250,6 @@ void Menu()     // function that handles the menu
         case 6:
             eraseDisplay();
             nxtDisplayString(1,"waiting for start");
-            nxtDisplayString(5,"Delay: %i",Delay);
             switch (Color)
             {
                 case 'b':
@@ -258,6 +259,7 @@ void Menu()     // function that handles the menu
                     switch (Auto)
                     {
                         case 'b':
+                         waitForStart();
                             //code for blue side1 get bowling ball
 
                             nxtDisplayString(2,"blue");
@@ -396,11 +398,18 @@ task main()
 	  }
 	  switch (nBtn)
 	  {
+<<<<<<< HEAD
       case kLeftButton:  --MenuItem;                    break;
 			case kRightButton: ++MenuItem;    	 	            break;
 			case kEnterButton: Enter = true;   ++ExitProgram; break;
       case kExitButton:  Exit = true;    --ExitProgram; break;
       }
+=======
+      case kLeftButton: --MenuItem;           break;
+			case kRightButton: ++MenuItem;          break;
+			case kEnterButton: Enter = true;        break;
+    }
+>>>>>>> parent of 16caeae... delete me
 		nxtDisplayString(0,"C:%c S:%c A:%c",Color,Side,Auto);
       Menu();
       GoBack();
