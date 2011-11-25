@@ -43,7 +43,7 @@ void armWristUpdate()
   static int loopsStable = 0;
   int maxAcceptableError;
 
-  if ( wrist.target < 605 )
+  if ( wrist.target < 500 )
   {
     motor[armWrist] = 0;
     nxtDisplayString(6, "TFB");
@@ -146,8 +146,9 @@ int crateManualControlOffset = 0;
 
 void moveSpinners(int p)
 {
-  crateRawTarget = p;
-  crateSpinner.target = (crateRawTarget+crateManualControlOffset);
+  crateSpinner.target = p;
+  //crateRawTarget = p;
+  //crateSpinner.target = (crateRawTarget+crateManualControlOffset);
 }
 
 void updateCratePosition()
@@ -166,7 +167,7 @@ void updateCratePosition()
     else wristInRange(863, 774) moveSpinners(316);
   }
   else if ( wrist.target == WRIST_INSIDEBODY ) // Wrist is moving back, crate is empty so don't bother keeping level
-    moveSpinners(30);
+    moveSpinners(-125);
 
   nxtDisplayString(0, "%i", nMotorEncoder[motorA]);
   nxtDisplayString(1, "%i", HTSPBreadADC(S3, 1, 10));
@@ -216,6 +217,7 @@ task main()
 
   while(1)
   {
+   nxtDisplayString(3,"%i",nMotorEncoder[motorA]);
     getJoystickSettings(joystick);
     /*
      * JS 1 - drivetrain
@@ -262,7 +264,7 @@ task main()
     else
       updateCratePosition();
 
-    motor[ballCollector] = (joy2Btn(7)? -100:0);
+    motor[ballCollector] = (joy2Btn(7) ? -100:0);
 
     // Update outputs
     armWristUpdate();
