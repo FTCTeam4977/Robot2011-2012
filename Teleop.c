@@ -34,6 +34,7 @@
 PID wrist; // Wrist joint
 PID base; //  Base joint
 PID crateSpinner; // NXT motor powered spinners on arm
+PID crateSpinner2; // Other crate spinner... possobly move this to an array in the future
 
 int grabberTarget = CLAW_OPEN;
 
@@ -46,13 +47,13 @@ void armWristUpdate()
   if ( wrist.target < 500 )
   {
     motor[armWrist] = 0;
-    nxtDisplayString(6, "TFB");
+    //nxtDisplayString(6, "TFB");
     return; // Outside of safe range ( too far back )
   }
   else if ( potInput > 980 && wrist.target >= 980 )
   {
     motor[armWrist] = 0;
-    nxtDisplayString(6, "TFF");
+    //nxtDisplayString(6, "TFF");
     return; // Outside of safe range ( too far forward )
   }
 
@@ -121,8 +122,8 @@ void armBaseUpdate()
 
     if ( abs(base.error) > 750 && base.target == BASE_PICKUP ) // Arm is headed forward and we are far away
       base.Kd = 2.8; // increase D to prevent slaming against the floor
-    else if ( potInput > 450 && base.target > 450 ) // TODO: check if this D modification is still needed
-      base.Kd = 2.5;
+    //else if ( potInput > 450 && base.target > 450 ) // TODO: check if this D modification is still needed
+    //  base.Kd = 2.5;
     else
       base.Kd = 0.4;
 
@@ -146,34 +147,36 @@ int crateManualControlOffset = 0;
 
 void moveSpinners(int p)
 {
-  crateSpinner.target = p;
-  //crateRawTarget = p;
-  //crateSpinner.target = (crateRawTarget+crateManualControlOffset);
+  crateRawTarget = p;
+
+  crateSpinner.target = (crateRawTarget+crateManualControlOffset);
+  crateSpinner2.target = (crateRawTarget+crateManualControlOffset);
 }
 
 void updateCratePosition()
 {
   if ( abs(wrist.error) < 50 && wrist.target == WRIST_EXTENDED ) // Normal ( picking up crates, etc )
   {
+    //moveSpinners((-40/233)*HTSPBreadADC(S3, 0, 10)+140.0858369);
     armInRange(732, 900) moveSpinners(0);
     else armInRange(559,733) moveSpinners(30);
     else armInRange(558, 400) moveSpinners(50);
     else armInRange(400, 300) moveSpinners(80);
   }
-  else if ( abs(wrist.error) > 50 && wrist.target == WRIST_EXTENDED ) // Wrist is moving to top, needs to stay level
+  else if ( abs(wrist.error) > 30 && wrist.target == WRIST_EXTENDED ) // Wrist is moving to top, needs to stay level
   {
-    wristInRange(1023, 935) moveSpinners(204);
-    else wristInRange(934, 864) moveSpinners(244);
-    else wristInRange(863, 774) moveSpinners(316);
+    //wristInRange(700, 1024) moveSpinners(170);
+     wristInRange(650, 1024) moveSpinners(90); // top
+     //else wristInRange(670, 800) moveSpinners(
+     else wristInRange(650, 600) moveSpinners(200); // mid range
+     else wristInRange(400, 600) moveSpinners(250); // pulling out
   }
   else if ( wrist.target == WRIST_INSIDEBODY ) // Wrist is moving back, crate is empty so don't bother keeping level
-    moveSpinners(-125);
+    moveSpinners(340);
 
-  nxtDisplayString(0, "%i", nMotorEncoder[motorA]);
-  nxtDisplayString(1, "%i", HTSPBreadADC(S3, 1, 10));
-  int output = calcPID(crateSpinner, nMotorEncoder[motorA]);
-   motor[motorA] = output;
-  motor[motorB] = output;
+  //nxtDisplayString(1, "%i", HTSPBreadADC(S3, 1, 10));
+  motor[motorA] = calcPID(crateSpinner, nMotorEncoder[motorA]);
+  motor[motorB] = calcPID(crateSpinner2, nMotorEncoder[motorB]);
 }
 
 void armGrabberUpdate()
@@ -182,15 +185,12 @@ void armGrabberUpdate()
   static int lastTarget = grabberTarget;
 
   if ( lastTarget != grabberTarget )
-    timeRef = nPgmTime+500;
+    timeRef = nPgmTime+300;
 
   if ( grabberTarget == CLAW_OPEN && timeRef > nPgmTime )
     motor[armClaw] = 80;
   else if ( grabberTarget == CLAW_CLOSED && timeRef > nPgmTime  )
-  {
-    crateManualControlOffset = 0;
     motor[armClaw] = -50;
-  }
   else
     motor[armClaw] = 0;
 
@@ -208,23 +208,31 @@ task main()
   initPID(wrist, 3.5, 0.05, 8);
   wrist.acceptedRange = 1; // We impliment special checking on the wrist, prevents I reset
 
-  initPID(crateSpinner, 3, 0.0001);
+  initPID(crateSpinner2, 2.5, 0.0001);
+  crateSpinner2.target = 0;
+
+  initPID(crateSpinner, 2.5, 0.0001);
   crateSpinner.target = 0;
+
   wrist.target = HTSPBreadADC(S3, 1, 10);
 
   waitForStart();
-  grabberTarget = CLAW_OPEN;
+  base.target = HTSPBreadADC(S3, 0, 10);
+  wrist.target = HTSPBreadADC(S3, 1, 10);
 
+  grabberTarget = CLAW_OPEN;
+  bDisplayDiagnostics = true;
   while(1)
   {
-   nxtDisplayString(3,"%i",nMotorEncoder[motorA]);
+   nxtDisplayString(0,"%i %i",nMotorEncoder[motorA], HTSPBreadADC(S3, 1, 10));
+
+
     getJoystickSettings(joystick);
     /*
      * JS 1 - drivetrain
      */
     motor[leftDrive] = dbc(joystick.joy1_y1,15);
     motor[rightDrive] = dbc(joystick.joy1_y2,15);
-    nxtDisplayString(0, "B: %i", HTSPBreadADC(S3, 0, 10));
     /*
      * JS 2 - arm
      */
@@ -252,19 +260,21 @@ task main()
     // Claw grab toggle
     if ( joy2Btn(6) )
       grabberTarget = CLAW_CLOSED;
-    else if ( joy2Btn(5) )
-      grabberTarget = CLAW_OPEN;
-
-    if ( dbc(joystick.joy2_y1, 15) != 0 )
+    else if ( joy2Btn(5) && wrist.target != WRIST_INSIDEBODY )
     {
-      motor[motorA] = joystick.joy2_y1/1.5;
-      motor[motorB] = joystick.joy2_y1/1.5;
-      crateManualControlOffset = nMotorEncoder[motorA]-crateRawTarget;
+      crateManualControlOffset = 0;
+      grabberTarget = CLAW_OPEN;
     }
-    else
-      updateCratePosition();
 
-    motor[ballCollector] = (joy2Btn(7) ? -100:0);
+
+    if ( joystick.joy1_TopHat == 0 )
+      crateManualControlOffset += 90;
+    else if ( joystick.joy1_TopHat == 4 )
+      crateManualControlOffset -= 90;
+
+    updateCratePosition();
+
+    motor[ballCollector] = (joy2Btn(7) ? -100:(joy2Btn(8)?100:0));
 
     // Update outputs
     armWristUpdate();
