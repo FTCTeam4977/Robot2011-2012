@@ -18,8 +18,8 @@
 #define BASE_STRAIGHTUP 356
 #define BASE_PICKUP 780
 #define BASE_TWOSTACK 650
-#define BASE_THREESTACK 600
-#define BASE_FOURSTACK 550
+#define BASE_THREESTACK 550
+#define BASE_FOURSTACK 450
 
 #define CLAW_CLOSED 1
 #define CLAW_OPEN 2
@@ -267,12 +267,14 @@ task main()
     }
 
 
-    if ( joystick.joy1_TopHat == 0 )
-      crateManualControlOffset += 90;
-    else if ( joystick.joy1_TopHat == 4 )
-      crateManualControlOffset -= 90;
-
-    updateCratePosition();
+    if ( dbc(joystick.joy2_y1, 5) != 0 )
+    {
+      motor[motorA] = joystick.joy2_y1/1.8;
+      motor[motorB] = joystick.joy2_y1/1.8;
+      crateManualControlOffset = nMotorEncoder[motorA]-crateRawTarget;
+    }
+    else
+      updateCratePosition();
 
     motor[ballCollector] = (joy2Btn(7) ? -100:(joy2Btn(8)?100:0));
 
