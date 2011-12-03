@@ -14,8 +14,9 @@
 #include "autonoLib.c"
 #include "JoystickDriver.c"
 
-void RedRight
+task main()
 {
+  StartTask(spinnerHolder);
   initGyro();
   waitForStart();
   wait1Msec(2000);

@@ -110,7 +110,7 @@ void armBaseUpdate()
     if ( potInput < 500 && potInput > 270 )
     {
       // Arm is in top range - very little force needed to maintain position
-      base.Kp = 1;
+      base.Kp = 0.9;
       base.Ki = 0.01;
       base.errorSum = 0;
     }
@@ -201,6 +201,10 @@ void armGrabberUpdate()
 
 task main()
 {
+  nMotorEncoder[motorA] = 50;
+  nMotorEncoder[motorB] = 50;
+
+
   initPID(base); // gains populated by update loop based on position
   base.acceptedRange = 1; // Custom I reset conditions
   base.target = HTSPBreadADC(S3, 0, 10);
@@ -224,8 +228,7 @@ task main()
   bDisplayDiagnostics = true;
   while(1)
   {
-   nxtDisplayString(0,"%i %i",nMotorEncoder[motorA], HTSPBreadADC(S3, 1, 10));
-
+    nxtDisplayString(0,"%i %i",nMotorEncoder[motorA], HTSPBreadADC(S3, 1, 10));
 
     getJoystickSettings(joystick);
     /*
@@ -255,6 +258,7 @@ task main()
     {
       wrist.target = WRIST_INSIDEBODY;
       base.target = 263;
+      grabberTarget = CLAW_CLOSED;
     }
 
     // Claw grab toggle

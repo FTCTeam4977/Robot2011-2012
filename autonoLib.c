@@ -5,6 +5,24 @@
 #include "FTC_Gyro.c"
 
 
+task spinnerHolder()
+{
+  PID c1;
+  PID s2;
+  initPID(c1, 2.5, 0.0001);
+  crateSpinner2.target = 0;
+
+  initPID(c2, 2.5, 0.0001);
+  crateSpinner.target = 0;
+
+  while(1)
+  {
+    motor[motorA] = calcPID(c1, nMotorEncoder[motorA]);
+    motor[motorB] = calcPID(c2, nMotorEncoder[motorB]);
+    wait1Msec(50);
+  }
+}
+
 void resetEncoders()
 {
   nMotorEncoder[leftDrive] = 0;

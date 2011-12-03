@@ -15,6 +15,7 @@
 #include "JoystickDriver.c"
 task main()
 {
+  StartTask(spinnerHolder);
   initGyro();
   waitForStart();
   wait1Msec(2000);
