@@ -201,8 +201,8 @@ void armGrabberUpdate()
 
 task main()
 {
-  nMotorEncoder[motorA] = 50;
-  nMotorEncoder[motorB] = 50;
+  nMotorEncoder[motorA] = -42;
+  nMotorEncoder[motorB] = -42;
 
 
   initPID(base); // gains populated by update loop based on position
@@ -213,10 +213,10 @@ task main()
   wrist.acceptedRange = 1; // We impliment special checking on the wrist, prevents I reset
 
   initPID(crateSpinner2, 2.5, 0.0001);
-  crateSpinner2.target = 0;
+  crateSpinner2.target = -42;
 
   initPID(crateSpinner, 2.5, 0.0001);
-  crateSpinner.target = 0;
+  crateSpinner.target = -42;
 
   wrist.target = HTSPBreadADC(S3, 1, 10);
 
@@ -270,6 +270,9 @@ task main()
       grabberTarget = CLAW_OPEN;
     }
 
+    // Crate offset manual reset
+    if ( joy2Btn(11) )
+      crateManualControlOffset = 0;
 
     if ( dbc(joystick.joy2_y1, 5) != 0 )
     {

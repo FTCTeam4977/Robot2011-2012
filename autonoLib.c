@@ -10,10 +10,10 @@ task spinnerHolder()
   PID c1;
   PID s2;
   initPID(c1, 2.5, 0.0001);
-  crateSpinner2.target = 0;
+  crateSpinner2.target = -42;
 
   initPID(c2, 2.5, 0.0001);
-  crateSpinner.target = 0;
+  crateSpinner.target = -42;
 
   while(1)
   {
