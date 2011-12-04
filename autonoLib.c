@@ -5,21 +5,21 @@
 #include "FTC_Gyro.c"
 
 
-task spinnerHolder()
+void holdSpinners()
 {
-  PID c1;
+  PID s1;
   PID s2;
-  initPID(c1, 2.5, 0.0001);
-  crateSpinner2.target = -42;
+  initPID(s1, 2.5, 0.0001);
+  s1.target = 0;
 
-  initPID(c2, 2.5, 0.0001);
-  crateSpinner.target = -42;
+  initPID(s2, 2.5, 0.0001);
+  s2.target = 0;
 
   while(1)
   {
-    motor[motorA] = calcPID(c1, nMotorEncoder[motorA]);
-    motor[motorB] = calcPID(c2, nMotorEncoder[motorB]);
-    wait1Msec(50);
+    motor[motorA] = calcPID(s1, nMotorEncoder[motorA]);
+    motor[motorB] = calcPID(s2, nMotorEncoder[motorB]);
+    wait1Msec(1);
   }
 }
 

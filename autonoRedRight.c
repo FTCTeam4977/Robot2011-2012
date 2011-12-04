@@ -16,17 +16,16 @@
 
 task main()
 {
-  StartTask(spinnerHolder);
   initGyro();
   waitForStart();
   wait1Msec(2000);
-  turnDegrees(-30);
+  //turnDegrees(-30);
   driveTo(9000, 0);
   turnDegrees(90);
   resetEncoders();
-  driveTo(-9000, 90);
+  driveTo(-6500, 90);
   turnDegrees(70);
   resetEncoders();
   driveTo(-18000, 67);
-  while(1);
+  holdSpinners();
 }

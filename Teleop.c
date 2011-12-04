@@ -17,7 +17,7 @@
 #define BASE_BACK 263
 #define BASE_STRAIGHTUP 356
 #define BASE_PICKUP 780
-#define BASE_TWOSTACK 650
+#define BASE_TWOSTACK 698
 #define BASE_THREESTACK 550
 #define BASE_FOURSTACK 450
 
@@ -92,7 +92,7 @@ void armWristUpdate()
     motor[armWrist] = 0;
   }
   else
-    motor[armWrist] = hlLimit(dbc(calcPID(wrist, potInput), 10), 80, (wrist.target < potInput&&abs(wrist.error) < 20 ? -20:-40));
+    motor[armWrist] = hlLimit(dbc(calcPID(wrist, potInput), 10), 95, (wrist.target < potInput&&abs(wrist.error) < 20 ? -20:-40));
 }
 
 void armBaseUpdate()
@@ -110,7 +110,7 @@ void armBaseUpdate()
     if ( potInput < 500 && potInput > 270 )
     {
       // Arm is in top range - very little force needed to maintain position
-      base.Kp = 0.9;
+      base.Kp = 0.7;
       base.Ki = 0.01;
       base.errorSum = 0;
     }
@@ -120,8 +120,8 @@ void armBaseUpdate()
       base.Ki = 0.07;
     }
 
-    if ( abs(base.error) > 750 && base.target == BASE_PICKUP ) // Arm is headed forward and we are far away
-      base.Kd = 2.8; // increase D to prevent slaming against the floor
+    if ( abs(base.error) > 70 && base.target == BASE_PICKUP ) // Arm is headed forward and we are far away
+      base.Kd = 2.5; // increase D to prevent slaming against the floor
     //else if ( potInput > 450 && base.target > 450 ) // TODO: check if this D modification is still needed
     //  base.Kd = 2.5;
     else
@@ -148,7 +148,6 @@ int crateManualControlOffset = 0;
 void moveSpinners(int p)
 {
   crateRawTarget = p;
-
   crateSpinner.target = (crateRawTarget+crateManualControlOffset);
   crateSpinner2.target = (crateRawTarget+crateManualControlOffset);
 }
@@ -158,7 +157,8 @@ void updateCratePosition()
   if ( abs(wrist.error) < 50 && wrist.target == WRIST_EXTENDED ) // Normal ( picking up crates, etc )
   {
     //moveSpinners((-40/233)*HTSPBreadADC(S3, 0, 10)+140.0858369);
-    armInRange(732, 900) moveSpinners(0);
+    armInRange(701, 900) moveSpinners(0);
+    else armInRange(650, 700) moveSpinners(6);
     else armInRange(559,733) moveSpinners(30);
     else armInRange(558, 400) moveSpinners(50);
     else armInRange(400, 300) moveSpinners(80);
@@ -212,10 +212,10 @@ task main()
   initPID(wrist, 3.5, 0.05, 8);
   wrist.acceptedRange = 1; // We impliment special checking on the wrist, prevents I reset
 
-  initPID(crateSpinner2, 2.5, 0.0001);
+  initPID(crateSpinner2, 2.1);
   crateSpinner2.target = -42;
 
-  initPID(crateSpinner, 2.5, 0.0001);
+  initPID(crateSpinner, 2.4);
   crateSpinner.target = -42;
 
   wrist.target = HTSPBreadADC(S3, 1, 10);
@@ -224,7 +224,7 @@ task main()
   base.target = HTSPBreadADC(S3, 0, 10);
   wrist.target = HTSPBreadADC(S3, 1, 10);
 
-  grabberTarget = CLAW_OPEN;
+  grabberTarget = CLAW_CLOSED;
   bDisplayDiagnostics = true;
   while(1)
   {
@@ -271,8 +271,8 @@ task main()
     }
 
     // Crate offset manual reset
-    if ( joy2Btn(11) )
-      crateManualControlOffset = 0;
+    /*if ( joy2Btn(11) )
+      crateManualControlOffset = 0;*/
 
     if ( dbc(joystick.joy2_y1, 5) != 0 )
     {

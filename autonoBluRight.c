@@ -15,17 +15,16 @@
 #include "JoystickDriver.c"
 task main()
 {
-  StartTask(spinnerHolder);
   initGyro();
   waitForStart();
   wait1Msec(2000);
-  turnDegrees(30);
+  //turnDegrees(30);
   driveTo(9000, 0); // come off the ramp
   turnDegrees(-90); // turn so we are pointed to the ball
   resetEncoders();
-  driveTo(-9000, -90); // drive towards ball
+  driveTo(-6500, -90); // drive towards ball
   turnDegrees(-50); // angle toward ball so we can push it and end up inside the park zone
   resetEncoders();
   driveTo(-19000, -43); // drive into zone
-  while(1);
+  holdSpinners();
 }
