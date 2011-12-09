@@ -403,11 +403,6 @@ task main()
 			case kRightButton: ++MenuItem;    	 	            break;
 			case kEnterButton: Enter = true;   ++ExitProgram; break;
       case kExitButton:  Exit = true;    --ExitProgram; break;
-      }
-
-      case kLeftButton: --MenuItem;           break;
-			case kRightButton: ++MenuItem;          break;
-			case kEnterButton: Enter = true;        break;
     }
 
 		nxtDisplayString(0,"C:%c S:%c A:%c",Color,Side,Auto);
