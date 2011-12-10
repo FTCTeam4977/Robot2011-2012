@@ -46,13 +46,5 @@ task main()
 
   driveTo(30000, -147); // Drive Back
 
-  /*turnDegrees(90);
-  resetEncoders();
-  driveTo(-4000, 90);
-  turnDegrees(60);
-  resetEncoders();
-  driveTo(-18000, 60);
-  resetEncoders();
-  driveTo(500);
-  holdSpinners();*/
+  holdSpinners();
 }
