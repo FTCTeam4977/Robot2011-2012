@@ -17,10 +17,36 @@
 task main()
 {
   initGyro();
-  waitForStart();
-  wait1Msec(5000);
-  driveTo(10000);
-  turnDegrees(90);
+//  waitForStart();
+//  wait1Msec(5000);
+  driveTo(10500);
+  turnDegrees(-90);
+  resetEncoders();
+
+  driveTo(4200, -90);
+  resetEncoders();
+
+  turnDegrees(-160);
+  resetEncoders();
+
+
+
+  driveTo(8000, -160);
+  turnDegrees(-240);
+  resetEncoders();
+
+  driveTo(-5000, -240);
+  turnDegrees(-147);
+
+  resetEncoders();
+
+  driveTo(-20000, -147); // Drive across
+  resetEncoders();
+
+
+  driveTo(30000, -147); // Drive Back
+
+  /*turnDegrees(90);
   resetEncoders();
   driveTo(-4000, 90);
   turnDegrees(60);
@@ -28,5 +54,5 @@ task main()
   driveTo(-18000, 60);
   resetEncoders();
   driveTo(500);
-  holdSpinners();
+  holdSpinners();*/
 }
