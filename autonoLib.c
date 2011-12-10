@@ -9,10 +9,10 @@ void holdSpinners()
 {
   PID s1;
   PID s2;
-  initPID(s1, 2.5, 0.0001);
+  initPID(s1, 2.8, 0.0001);
   s1.target = 0;
 
-  initPID(s2, 2.5, 0.0001);
+  initPID(s2, 2.8, 0.0001);
   s2.target = 0;
 
   while(1)
