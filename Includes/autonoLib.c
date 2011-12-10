@@ -5,7 +5,6 @@
 #include "FTC_Gyro.c"
 
 
-
 void holdSpinners()
 {
   PID s1;
@@ -33,13 +32,13 @@ void resetEncoders()
 void turnDegrees(int deg)
 {
   PID turn;
-  initPID(turn, 0.9, 0.02);
+  initPID(turn, 0.9, 0.1);
   turn.acceptedRange = 1;
   turn.target = deg;
   int cyclesStable = 0;
-  while ( cyclesStable < 50 )
+  while ( cyclesStable < 10 )
   {
-    if ( atPIDTarget(turn) )
+    if ( abs(turn.error) < 5 )
        cyclesStable++;
     else
       cyclesStable = 0;
@@ -69,7 +68,7 @@ void driveTo(int target, int angle = -999)
 
   int cyclesStable = 0;
 
-  while ( cyclesStable < 30 )
+  while ( cyclesStable < 10 )
   {
     int out = limitVar(calcPID(drive, ((nMotorEncoder[leftDrive]-nMotorEncoder[rightDrive])/2)), 100);
     int angleOffset = limitVar(calcPID(_angle, getGyroAngle()), abs(out));
