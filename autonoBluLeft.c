@@ -1,5 +1,5 @@
 
-void BluleftBall()
+void BluLeftBall()
 {
   driveTo(9000); // come off the ramp
   turnDegrees(-90); // turn so we are pointed to the ball
