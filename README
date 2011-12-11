@@ -1,0 +1,13 @@
+FTC Team 4977 - RobotC Code
+
+BasicTeleop.c - Basic tank driving in teleop 
+FTC_Gyro.c - Library for integrating the HiTechnic gyro
+FTC_PID.c - Proportional Integral Derivative controller library
+FTC_ValueUtils.h - Some useful macros
+autonoLib.c - Library that implements FTC_PID and FTC_Gyro to provide accurate straight driving and accurate turns
+Teleop.c - Tank drive + arm control
+autonoBluLeft.c - 20 point autonomous, blue left side
+autonoBluRight.c - 20 point autonomous, blue right side
+autonoRedLeft.c - 20 point autonomous, red left side
+autonoRedRight.c - 20 point autonomous, red right side
+redLeftFar.c - experimental 25 point autonomous, red left side
