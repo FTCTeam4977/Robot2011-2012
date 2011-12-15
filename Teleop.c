@@ -19,7 +19,8 @@
 #define BASE_PICKUP 780
 #define BASE_TWOSTACK 698
 #define BASE_THREESTACK 550
-#define BASE_FOURSTACK 450
+
+#define BASE_FOURSTACK 600
 
 #define CLAW_CLOSED 1
 #define CLAW_OPEN 2
@@ -156,12 +157,15 @@ void updateCratePosition()
 {
   if ( abs(wrist.error) < 50 && wrist.target == WRIST_EXTENDED ) // Normal ( picking up crates, etc )
   {
-    //moveSpinners((-40/233)*HTSPBreadADC(S3, 0, 10)+140.0858369);
+    //moveSpinners((int) ((-40/233)*(float)HTSPBreadADC(S3, 0, 10)+140.0858369) );
     armInRange(701, 900) moveSpinners(0);
-    else armInRange(650, 700) moveSpinners(6);
+    else armInRange(650, 700) moveSpinners(30);
+
+  //  else armInRange(650, 500) moveSpinners();
+
     else armInRange(559,733) moveSpinners(30);
-    else armInRange(558, 400) moveSpinners(50);
-    else armInRange(400, 300) moveSpinners(80);
+    else armInRange(558, 400) moveSpinners(64);
+    else armInRange(400, 300) moveSpinners(75);
   }
   else if ( abs(wrist.error) > 30 && wrist.target == WRIST_EXTENDED ) // Wrist is moving to top, needs to stay level
   {
@@ -212,10 +216,10 @@ task main()
   initPID(wrist, 3.5, 0.05, 8);
   wrist.acceptedRange = 1; // We impliment special checking on the wrist, prevents I reset
 
-  initPID(crateSpinner2, 2.1);
+  initPID(crateSpinner2, 2.8, 0.3);
   crateSpinner2.target = -42;
 
-  initPID(crateSpinner, 2.4);
+  initPID(crateSpinner, 2.8, 0.3);
   crateSpinner.target = -42;
 
   wrist.target = HTSPBreadADC(S3, 1, 10);
@@ -265,14 +269,12 @@ task main()
     if ( joy2Btn(6) )
       grabberTarget = CLAW_CLOSED;
     else if ( joy2Btn(5) && wrist.target != WRIST_INSIDEBODY )
-    {
-      crateManualControlOffset = 0;
       grabberTarget = CLAW_OPEN;
-    }
+
 
     // Crate offset manual reset
-    /*if ( joy2Btn(11) )
-      crateManualControlOffset = 0;*/
+    if ( joy2Btn(12) )
+      crateManualControlOffset = 0;
 
     if ( dbc(joystick.joy2_y1, 5) != 0 )
     {
