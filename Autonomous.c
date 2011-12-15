@@ -109,13 +109,13 @@ void Menu()     // function that handles the menu
                 break;
 
             case 1:
-                nxtDisplayString(1,"<side 1>");
-                nxtDisplayString(2,"side 2");
+                nxtDisplayString(1,"<Left>");
+                nxtDisplayString(2,"Right");
                 break;
 
             case 2:
-                nxtDisplayString(1,"side 1");
-                nxtDisplayString(2,"<side 2>");
+                nxtDisplayString(1,"Left");
+                nxtDisplayString(2,"<Right>");
                 break;
 
             case 3:
@@ -286,7 +286,7 @@ void Menu()     // function that handles the menu
                             waitForStart();
                             Wait(Delay);
                             //code for blue side1 get bowling ball
-                            BluLeftBall();
+                            BluleftBall();
                             return;
                         case 'd':
                             nxtDisplayString(2,"blue");
@@ -432,6 +432,7 @@ void Menu()     // function that handles the menu
 }
 task main()
 {
+  initGyro();
   nNxtButtonTask = -2;//takes full control of buttons and allows us to us exit button
   nNxtExitClicks = 3;// because we take control, we need a way the exit the program,with this we exit by hitiing exit three times
   nxtDisplayString(1,"AutonomousSelect");
