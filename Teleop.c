@@ -18,7 +18,7 @@
 #define BASE_STRAIGHTUP 356
 #define BASE_PICKUP 780
 #define BASE_TWOSTACK 698
-#define BASE_THREESTACK 550
+#define BASE_THREESTACK 640
 
 #define BASE_FOURSTACK 600
 
@@ -163,7 +163,7 @@ void updateCratePosition()
 
   //  else armInRange(650, 500) moveSpinners();
 
-    else armInRange(559,733) moveSpinners(30);
+    else armInRange(559,733) moveSpinners(50);
     else armInRange(558, 400) moveSpinners(64);
     else armInRange(400, 300) moveSpinners(75);
   }
@@ -216,10 +216,10 @@ task main()
   initPID(wrist, 3.5, 0.05, 8);
   wrist.acceptedRange = 1; // We impliment special checking on the wrist, prevents I reset
 
-  initPID(crateSpinner2, 2.8, 0.3);
+  initPID(crateSpinner2, 1.8, 0.3);
   crateSpinner2.target = -42;
 
-  initPID(crateSpinner, 2.8, 0.3);
+  initPID(crateSpinner, 2.5, 0.3);
   crateSpinner.target = -42;
 
   wrist.target = HTSPBreadADC(S3, 1, 10);
@@ -240,6 +240,7 @@ task main()
      */
     motor[leftDrive] = dbc(joystick.joy1_y1,15);
     motor[rightDrive] = dbc(joystick.joy1_y2,15);
+
     /*
      * JS 2 - arm
      */
