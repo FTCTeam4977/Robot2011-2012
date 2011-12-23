@@ -8,7 +8,7 @@
 #error "Gyro not defined. Define GYRO or remove Gyro library"
 #endif
 
-
+ 
 typedef struct
 {
   float degsec;
@@ -54,10 +54,7 @@ void initGyro()
 
 int getGyroAngle()
 {
-  hogCPU();
-  int local = gyroData.deg;
-  releaseCPU();
-  return local;
+  return gyroData.deg;
 }
 
 #endif
