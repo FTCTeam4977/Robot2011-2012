@@ -54,7 +54,7 @@ void initGyro()
 
 int getGyroAngle()
 {
-  return gyroData.deg;
+  return -gyroData.deg;
 }
 
 #endif
