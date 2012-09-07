@@ -16,9 +16,11 @@
 
 #define BASE_BACK 263
 #define BASE_STRAIGHTUP 356
-#define BASE_PICKUP 780
+#define BASE_PICKUP 820
 #define BASE_TWOSTACK 698
 #define BASE_THREESTACK 640
+
+#define BASE_OFFSET -27
 
 #define BASE_FOURSTACK 600
 
@@ -39,69 +41,13 @@ PID crateSpinner2; // Other crate spinner... possobly move this to an array in t
 
 int grabberTarget = CLAW_OPEN;
 
-void armWristUpdate()
-{
-  int potInput = HTSPBreadADC(S3, 1, 10);
-  static int loopsStable = 0;
-  int maxAcceptableError;
-
-  if ( wrist.target < 500 )
-  {
-    motor[armWrist] = 0;
-    //nxtDisplayString(6, "TFB");
-    return; // Outside of safe range ( too far back )
-  }
-  else if ( potInput > 980 && wrist.target >= 980 )
-  {
-    motor[armWrist] = 0;
-    //nxtDisplayString(6, "TFF");
-    return; // Outside of safe range ( too far forward )
-  }
-
-  if ( wrist.target < potInput ) // Going down
-  {
-    wrist.Kp = 0.5;
-    if ( abs(wrist.error ) < 10 )
-      wrist.Kd = 0;
-    else
-      wrist.Kd = 3.3;
-  }
-  else if ( wrist.target > potInput ) // Going up
-  {
-
-    wrist.Kp = 5;
-    wrist.Kd = 1;
-  }
-
-  if ( wrist.target == WRIST_INSIDEBODY )
-    maxAcceptableError = 150;
-  else
-    maxAcceptableError = 15;
-
-  if ( abs(wrist.error) <= maxAcceptableError )
-  {
-    if ( loopsStable < 1000 ) loopsStable++; // keep it below a point so we don't go over max int size
-                                             // 1000 isn't the max int size, but we shouldn't need to check any higher for this loop
-  }
-  else
-    loopsStable = 0;
-
-  if ( loopsStable >= 50 )
-  {
-    calcPID(wrist, potInput);
-    wrist.errorSum = 0; // prevent I buildup
-    motor[armWrist] = 0;
-  }
-  else
-    motor[armWrist] = hlLimit(dbc(calcPID(wrist, potInput), 10), 95, (wrist.target < potInput&&abs(wrist.error) < 20 ? -20:-40));
-}
 
 void armBaseUpdate()
 {
-    int potInput = HTSPBreadADC(S3, 0, 10);
+    int potInput = HTSPBreadADC(S3, 0, 10)+BASE_OFFSET;
     static int loopsStable = 0;
 
-    if ( abs(base.error) <= 20 )
+    if ( abs(base.error) <= 60 ) // was 75
     {
       if ( loopsStable < 1000 ) loopsStable++;
     }
@@ -128,7 +74,7 @@ void armBaseUpdate()
     else
       base.Kd = 0.4;
 
-    if ( loopsStable <= 20 )
+    if ( loopsStable <= 9 ) // was 20
       motor[armBase] = dbc(limitVar(calcPID(base, potInput), 80), 23);
     else
     {
@@ -201,14 +147,67 @@ void armGrabberUpdate()
   lastTarget = grabberTarget;
 }
 
+void armWristUpdate()
+{
+  int potInput = HTSPBreadADC(S3, 1, 10);
+  static int loopsStable = 0;
+  int maxAcceptableError;
+
+  if ( wrist.target < 500 )
+  {
+    motor[armWrist] = 0;
+    //nxtDisplayString(6, "TFB");
+    return; // Outside of safe range ( too far back )
+  }
+  else if ( potInput > 824 && wrist.target >= 810 )
+  {
+    motor[armWrist] = 0;
+    //nxtDisplayString(6, "TFF");
+    return; // Outside of safe range ( too far forward )
+  }
+
+  if ( wrist.target < potInput ) // Going down
+  {
+    wrist.Kp = 0.5;
+    if ( abs(wrist.error ) < 10 )
+      wrist.Kd = 0;
+    else
+      wrist.Kd = 3.3;
+  }
+  else if ( wrist.target > potInput ) // Going up
+  {
+
+    wrist.Kp = 5;
+    wrist.Kd = 1;
+  }
+
+  if ( wrist.target == WRIST_INSIDEBODY )
+    maxAcceptableError = 150;
+  else
+    maxAcceptableError = 15;
+
+  if ( abs(wrist.error) <= maxAcceptableError )
+  {
+    if ( loopsStable < 1000 ) loopsStable++; // keep it below a point so we don't go over max int size
+                                             // 1000 isn't the max int size, but we shouldn't need to check any higher for this loop
+  }
+  else
+    loopsStable = 0;
+
+  if ( loopsStable >= 50 )
+  {
+    calcPID(wrist, potInput);
+    wrist.errorSum = 0; // prevent I buildup
+    motor[armWrist] = 0;
+  }
+  else
+    motor[armWrist] = hlLimit(dbc(calcPID(wrist, potInput), 10), 95, (wrist.target < potInput&&abs(wrist.error) < 20 ? -20:-40));
+}
 
 
 task main()
 {
-  nMotorEncoder[motorA] = -42;
-  nMotorEncoder[motorB] = -42;
-
-
+  bDisplayDiagnostics = true;
   initPID(base); // gains populated by update loop based on position
   base.acceptedRange = 1; // Custom I reset conditions
   base.target = HTSPBreadADC(S3, 0, 10);
@@ -229,8 +228,8 @@ task main()
   wrist.target = HTSPBreadADC(S3, 1, 10);
 
   grabberTarget = CLAW_CLOSED;
-  bDisplayDiagnostics = true;
-  while(1)
+
+  while(true)
   {
     nxtDisplayString(0,"%i %i",nMotorEncoder[motorA], HTSPBreadADC(S3, 1, 10));
 
@@ -277,7 +276,7 @@ task main()
     if ( joy2Btn(12) )
       crateManualControlOffset = 0;
 
-    if ( dbc(joystick.joy2_y1, 5) != 0 )
+    if ( dbc(joystick.joy2_y1, 10) != 0 )
     {
       motor[motorA] = joystick.joy2_y1/1.8;
       motor[motorB] = joystick.joy2_y1/1.8;
